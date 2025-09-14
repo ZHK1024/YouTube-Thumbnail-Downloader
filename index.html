@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Thumbnail Downloader - Free Online Tool</title>
+    <meta name="description" content="Easily get high-quality thumbnails from any YouTube video. Download in different sizes.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- Configure Tailwind custom colors and fonts -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FF0000', // YouTube red
+                        secondary: '#2A2A2A',
+                        light: '#F5F5F5',
+                        dark: '#121212'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .transition-custom {
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .scale-hover {
+                @apply hover:scale-105 transition-transform duration-300;
+            }
+            .card-hover {
+                @apply hover:shadow-lg transition-all duration-300 hover:-translate-y-1;
+            }
+        }
+    </style>
+</head>
+<body class="font-inter bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+    <!-- Navigation bar -->
+    <header class="bg-white shadow-sm sticky top-0 z-50 transition-all duration-300" id="navbar">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-play-circle text-primary text-2xl"></i>
+                <h1 class="text-xl font-bold bg-gradient-to-r from-primary to-red-600 bg-clip-text text-transparent">YouTube Thumbnail Grabber</h1>
+            </div>
+            
+            <nav class="hidden md:flex items-center space-x-6">
+                <a href="#hero" class="text-gray-600 hover:text-primary transition-custom">Home</a>
+                <a href="#how-it-works" class="text-gray-600 hover:text-primary transition-custom">How It Works</a>
+                <a href="#about" class="text-gray-600 hover:text-primary transition-custom">About</a>
+            </nav>
+            
+            <button class="md:hidden text-gray-600 focus:outline-none" id="mobile-menu-button">
+                <i class="fa fa-bars text-xl"></i>
+            </button>
+        </div>
+        
+        <!-- Mobile menu -->
+        <div class="md:hidden hidden bg-white shadow-md absolute w-full" id="mobile-menu">
+            <div class="container mx-auto px-4 py-3 flex flex-col space-y-3">
+                <a href="#hero" class="text-gray-600 hover:text-primary py-2 transition-custom">Home</a>
+                <a href="#how-it-works" class="text-gray-600 hover:text-primary py-2 transition-custom">How It Works</a>
+                <a href="#about" class="text-gray-600 hover:text-primary py-2 transition-custom">About</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main content area -->
+    <main class="flex-grow">
+        <!-- Hero section -->
+        <section id="hero" class="bg-gradient-to-br from-gray-900 to-gray-800 text-white py-16 md:py-24">
+            <div class="container mx-auto px-4">
+                <div class="max-w-3xl mx-auto text-center">
+                    <h2 class="text-[clamp(2rem,5vw,3.5rem)] font-bold leading-tight text-shadow mb-6">
+                        Get YouTube Video Thumbnails Fast
+                    </h2>
+                    <p class="text-gray-300 text-lg md:text-xl mb-8">
+                        Just paste a YouTube link and download the thumbnail in any size you want
+                    </p>
+                    
+                    <!-- Input form -->
+                    <div class="bg-white rounded-lg shadow-xl p-1 flex flex-col md:flex-row">
+                        <input 
+                            type="text" 
+                            id="video-url" 
+                            placeholder="Paste your YouTube video link..." 
+                            class="flex-grow px-4 py-3 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-primary text-gray-800"
+                        >
+                        <button 
+                            id="extract-btn" 
+                            class="bg-primary hover:bg-red-600 text-white font-medium px-6 py-3 rounded-r-lg transition-custom scale-hover flex items-center justify-center mt-1 md:mt-0"
+                        >
+                            <i class="fa fa-download mr-2"></i>Get Thumbnail
+                        </button>
+                    </div>
+                    
+                    <p class="text-gray-400 text-sm mt-4">
+                        Works with both normal and short YouTube links (like https://youtu.be/xxxx or https://www.youtube.com/watch?v=xxxx)
+                    </p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Results section -->
+        <section id="results-section" class="py-12 bg-white hidden">
+            <div class="container mx-auto px-4">
+                <div class="max-w-5xl mx-auto">
+                    <div class="text-center mb-10">
+                        <h3 class="text-2xl md:text-3xl font-bold mb-3">Your Thumbnails</h3>
+                        <p class="text-gray-600">Pick a size to download</p>
+                    </div>
+                    
+                    <div id="thumbnails-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Thumbnails will be generated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- How it works -->
+        <section id="how-it-works" class="py-16 bg-gray-50">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-16">
+                    <h3 class="text-2xl md:text-3xl font-bold mb-4">How It Works</h3>
+                    <p class="text-gray-600 max-w-2xl mx-auto">Three easy steps to get your YouTube thumbnail</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                    <div class="bg-white p-6 rounded-lg shadow-md card-hover">
+                        <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                            <i class="fa fa-link text-primary text-xl"></i>
+                        </div>
+                        <h4 class="text-xl font-semibold mb-3">Copy the link</h4>
+                        <p class="text-gray-600">Find the video on YouTube and copy its URL</p>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow-md card-hover">
+                        <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                            <i class="fa fa-paste text-primary text-xl"></i>
+                        </div>
+                        <h4 class="text-xl font-semibold mb-3">Paste and get</h4>
+                        <p class="text-gray-600">Paste the link above and click "Get Thumbnail"</p>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-lg shadow-md card-hover">
+                        <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                            <i class="fa fa-download text-primary text-xl"></i>
+                        </div>
+                        <h4 class="text-xl font-semibold mb-3">Download</h4>
+                        <p class="text-gray-600">Pick the size you want and download it</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Supported sizes -->
+        <section class="py-16 bg-white">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-16">
+                    <h3 class="text-2xl md:text-3xl font-bold mb-4">Supported Sizes</h3>
+                    <p class="text-gray-600 max-w-2xl mx-auto">We offer several common sizes for you to choose from</p>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="py-3 px-6 text-left border-b">Size Name</th>
+                                <th class="py-3 px-6 text-left border-b">Resolution</th>
+                                <th class="py-3 px-6 text-left border-b">Use Case</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="hover:bg-gray-50 transition-custom">
+                                <td class="py-4 px-6 border-b">Max Size</td>
+                                <td class="py-4 px-6 border-b">1280 × 720</td>
+                                <td class="py-4 px-6 border-b">HD or print</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 transition-custom">
+                                <td class="py-4 px-6 border-b">HD</td>
+                                <td class="py-4 px-6 border-b">480 × 360</td>
+                                <td class="py-4 px-6 border-b">Web, social media</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 transition-custom">
+                                <td class="py-4 px-6 border-b">Standard</td>
+                                <td class="py-4 px-6 border-b">640 × 480</td>
+                                <td class="py-4 px-6 border-b">General use, preview</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 transition-custom">
+                                <td class="py-4 px-6 border-b">Small</td>
+                                <td class="py-4 px-6 border-b">120 × 90</td>
+                                <td class="py-4 px-6 border-b">Thumbnails, small preview</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 transition-custom">
+                                <td class="py-4 px-6">Backup</td>
+                                <td class="py-4 px-6">120 × 90</td>
+                                <td class="py-4 px-6">If main image not available</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+        
+        <!-- About section -->
+        <section id="about" class="py-16 bg-gray-900 text-white">
+            <div class="container mx-auto px-4">
+                <div class="max-w-3xl mx-auto">
+                    <h3 class="text-2xl md:text-3xl font-bold mb-6 text-center">About</h3>
+                    <p class="mb-4 text-gray-300 leading-relaxed">
+                        YouTube Thumbnail Grabber is a free online tool to help you get thumbnails from any YouTube video.
+                    </p>
+                    <p class="mb-4 text-gray-300 leading-relaxed">
+                        We don't save any images or user info. Everything happens in your browser. Please follow copyright rules when using images.
+                    </p>
+                    <p class="text-gray-300 leading-relaxed">
+                        This tool is for learning and research only. Not connected to YouTube.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-400 py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa fa-play-circle text-primary"></i>
+                        <span class="font-medium">YouTube Thumbnail Grabber</span>
+                    </div>
+                    <p class="text-sm mt-2">© 2023 All rights reserved</p>
+                </div>
+                
+                <div class="flex space-x-6">
+                    <a href="#" class="hover:text-white transition-custom">
+                        <i class="fa fa-github text-xl"></i>
+                    </a>
+                    <a href="#" class="hover:text-white transition-custom">
+                        <i class="fa fa-twitter text-xl"></i>
+                    </a>
+                    <a href="#" class="hover:text-white transition-custom">
+                        <i class="fa fa-envelope text-xl"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 通知提示 -->
+    <div id="notification" class="fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 flex items-center">
+        <i id="notification-icon" class="mr-2"></i>
+        <span id="notification-message"></span>
+    </div>
+
+    <script>
+        // DOM elements
+        const videoUrlInput = document.getElementById('video-url');
+        const extractBtn = document.getElementById('extract-btn');
+        const resultsSection = document.getElementById('results-section');
+        const thumbnailsContainer = document.getElementById('thumbnails-container');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const navbar = document.getElementById('navbar');
+        const notification = document.getElementById('notification');
+        const notificationIcon = document.getElementById('notification-icon');
+        const notificationMessage = document.getElementById('notification-message');
+        
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 10) {
+                navbar.classList.add('py-2', 'shadow');
+                navbar.classList.remove('py-4');
+            } else {
+                navbar.classList.add('py-4');
+                navbar.classList.remove('py-2', 'shadow');
+            }
+        });
+        
+        // Mobile menu toggle
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        
+        // Click outside to close mobile menu
+        document.addEventListener('click', (e) => {
+            if (!mobileMenuButton.contains(e.target) && !mobileMenu.contains(e.target)) {
+                mobileMenu.classList.add('hidden');
+            }
+        });
+        
+        // Show notification
+        function showNotification(message, isError = false) {
+            notificationMessage.textContent = message;
+            
+            if (isError) {
+                notification.classList.add('bg-red-500', 'text-white');
+                notification.classList.remove('bg-green-500', 'text-white');
+                notificationIcon.className = 'fa fa-exclamation-circle mr-2';
+            } else {
+                notification.classList.add('bg-green-500', 'text-white');
+                notification.classList.remove('bg-red-500', 'text-white');
+                notificationIcon.className = 'fa fa-check-circle mr-2';
+            }
+            
+            // Show notification
+            notification.classList.remove('translate-y-20', 'opacity-0');
+            notification.classList.add('translate-y-0', 'opacity-100');
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                notification.classList.remove('translate-y-0', 'opacity-100');
+                notification.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+        
+        // Extract YouTube video ID from URL
+        function extractVideoId(url) {
+            // Match standard URLs and short links
+            const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+            const match = url.match(regex);
+            
+            return match && match[1] ? match[1] : null;
+        }
+        
+        // Create thumbnail card
+        function createThumbnailCard(sizeName, url, resolution) {
+            const card = document.createElement('div');
+            card.className = 'bg-white rounded-lg shadow-md overflow-hidden card-hover';
+            
+            card.innerHTML = `
+                <div class="relative aspect-video bg-gray-100 overflow-hidden">
+                    <img src="${url}" alt="YouTube thumbnail in ${sizeName} size" class="w-full h-full object-cover transition-opacity duration-300" loading="lazy">
+                    <div class="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                        ${resolution}
+                    </div>
+                </div>
+                <div class="p-4">
+                    <h4 class="font-semibold mb-2">${sizeName}</h4>
+                    <button class="download-btn w-full bg-primary hover:bg-red-600 text-white py-2 rounded transition-custom flex items-center justify-center" data-url="${url}">
+                        <i class="fa fa-download mr-2"></i>Download
+                    </button>
+                </div>
+            `;
+            
+            return card;
+        }
+        
+        // Extract and display thumbnails
+        function extractAndDisplayThumbnails() {
+            const url = videoUrlInput.value.trim();
+            
+            if (!url) {
+                showNotification('Please enter a YouTube video link', true);
+                return;
+            }
+            
+            const videoId = extractVideoId(url);
+            
+            if (!videoId) {
+                showNotification('Could not get video ID from the link. Please check your link.', true);
+                return;
+            }
+            
+            // Different thumbnail sizes URLs
+            const thumbnails = [
+                { name: 'Max Size', suffix: 'maxresdefault.jpg', resolution: '1280 × 720' },
+                { name: 'HD', suffix: 'hqdefault.jpg', resolution: '480 × 360' },
+                { name: 'Standard', suffix: 'sddefault.jpg', resolution: '640 × 480' },
+                { name: 'Small', suffix: 'default.jpg', resolution: '120 × 90' },
+                { name: 'Backup 1', suffix: '1.jpg', resolution: '120 × 90' },
+                { name: 'Backup 2', suffix: '2.jpg', resolution: '120 × 90' },
+                { name: 'Backup 3', suffix: '3.jpg', resolution: '120 × 90' }
+            ];
+            
+            // Clear container
+            thumbnailsContainer.innerHTML = '';
+            
+            // Create and add thumbnail cards
+            thumbnails.forEach(thumbnail => {
+                const thumbnailUrl = `https://i.ytimg.com/vi/${videoId}/${thumbnail.suffix}`;
+                const card = createThumbnailCard(thumbnail.name, thumbnailUrl, thumbnail.resolution);
+                thumbnailsContainer.appendChild(card);
+            });
+            
+            // Show results section and scroll to results
+            resultsSection.classList.remove('hidden');
+            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            // Add download event listeners
+            document.querySelectorAll('.download-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const imgUrl = this.getAttribute('data-url');
+                    downloadImage(imgUrl);
+                });
+            });
+            
+            showNotification('Thumbnails ready!');
+        }
+        
+        // Download image
+        function downloadImage(url) {
+            fetch(url)
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    
+                    // Extract filename from URL
+                    const fileName = url.split('/').pop() || 'youtube-thumbnail.jpg';
+                    a.download = fileName;
+                    
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    
+                    showNotification('Download started');
+                })
+                .catch(error => {
+                    showNotification('Download failed. Please try again.', true);
+                    console.error('Download error:', error);
+                });
+        }
+        
+        // Event listeners
+        extractBtn.addEventListener('click', extractAndDisplayThumbnails);
+        
+        // Support Enter key submission
+        videoUrlInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                extractAndDisplayThumbnails();
+            }
+        });
+        
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                    
+                    // Close mobile menu
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
