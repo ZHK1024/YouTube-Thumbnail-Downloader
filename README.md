@@ -14,7 +14,7 @@ Just visit: [https://youtube.tools100.online/](https://youtube.tools100.online/)
 - Responsive design for mobile and desktop
 
 ## Live Demo
-👉 [YouTube Thumbnail Downloader](https://youtube.tools100.online/)
+👉 [Download YouTube Thumbnail](https://youtube.tools100.online/)
 
 ## How to Use
 1. Visit the [YouTube Thumbnail Downloader](https://youtube.tools100.online/)
