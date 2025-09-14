@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Block crawling of legal documents
+Disallow: /legal/
+
+# Sitemap location
+Sitemap: https://youtube.tools100.online/sitemap.xml
